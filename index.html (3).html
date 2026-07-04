@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desafio 21 Dias — Power Wellness 2ª Edição</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rose:#cf98dd;--rose-lt:#fcedf4;--rose-mid:#f1cee0;
+  --lilac:#c5b3d8;--cream:#fdf9f6;--ink:#2a1f2d;
+  --ink-mid:#5a4a5e;--ink-soft:#9a8a9e;--line:rgba(197,179,216,0.25);
+  --gold:#b8922a;--green:#3a9e72;--green-lt:#e8f4ef;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.header{text-align:center;padding:2rem 1.5rem 1.25rem;border-bottom:0.5px solid var(--line);position:relative;flex-shrink:0}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--rose),var(--lilac),var(--rose),transparent)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:var(--ink)}
+.logo span{color:var(--rose);font-style:italic}
+.logo-sub{font-size:11px;color:var(--ink-soft);font-weight:300;margin-top:2px;letter-spacing:.04em}
+.edition{display:inline-block;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--rose-lt);color:#7a3328;border:0.5px solid #dbb5ad;margin-top:8px;letter-spacing:.05em}
+
+/* TABS */
+.tabs{display:flex;border-bottom:0.5px solid var(--line);background:#fff;flex-shrink:0}
+.tab-btn{flex:1;padding:11px 6px;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--ink-soft);border-bottom:2px solid transparent;transition:all .2s;line-height:1.3;text-align:center}
+.tab-btn .tab-num{display:block;font-size:9px;font-weight:400;color:var(--ink-soft);margin-bottom:2px}
+.tab-btn.active{color:var(--ink);border-bottom-color:var(--rose)}
+
+/* VIEWS */
+.view{display:none;padding:1.25rem;max-width:520px;width:100%;margin:0 auto;flex:1}
+.view.active{display:block}
+
+/* NAME SCREEN */
+.name-screen{text-align:center;padding:2.5rem 1rem}
+.welcome-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.welcome-sub{font-size:13px;color:var(--ink-mid);line-height:1.6;margin-bottom:1.75rem}
+.name-screen input{width:100%;padding:13px 16px;border:0.5px solid var(--lilac);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);background:#fff;outline:none;margin-bottom:10px;transition:border-color .2s}
+.name-screen input:focus{border-color:var(--rose)}
+.name-screen input::placeholder{color:var(--ink-soft)}
+.btn-primary{width:100%;padding:14px;background:var(--rose);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#fff;cursor:pointer;transition:opacity .2s}
+.btn-primary:hover{opacity:.88}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+
+/* DAY SELECTOR */
+.day-selector{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:1.25rem;overflow-x:auto;padding-bottom:4px}
+.day-pill{padding:8px 3px;border-radius:10px;border:0.5px solid var(--line);background:#fff;cursor:pointer;text-align:center;transition:all .2s;font-size:10px;font-weight:500;color:var(--ink-soft)}
+.day-pill .dn{display:block;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.day-pill.active{background:var(--rose-lt);border-color:var(--lilac)}
+.day-pill.complete{background:var(--rose-lt);border-color:var(--rose)}
+.day-pill.complete .dn{color:var(--rose)}
+
+/* DAY HEADER */
+.day-header{margin-bottom:1rem}
+.day-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--ink)}
+.day-quote{font-size:12px;color:var(--ink-soft);margin-top:3px;font-style:italic}
+.day-pts-badge{display:inline-block;margin-top:6px;font-size:12px;font-weight:500;color:var(--rose);background:var(--rose-lt);padding:3px 10px;border-radius:20px;border:0.5px solid var(--lilac)}
+
+/* SECTION LABEL */
+.sec-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin:1rem 0 7px}
+
+/* CHECK ITEMS */
+.check-list{display:flex;flex-direction:column;gap:6px}
+.check-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:#fff;border:0.5px solid var(--line);border-radius:10px;cursor:pointer;transition:all .2s;user-select:none}
+.check-item:hover{border-color:var(--lilac)}
+.check-item.checked{background:var(--rose-lt);border-color:var(--rose)}
+.check-box{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--lilac);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:12px;color:transparent}
+.check-item.checked .check-box{background:var(--rose);border-color:var(--rose);color:#fff}
+.check-info{flex:1}
+.check-name{font-size:13px;font-weight:500;color:var(--ink)}
+.check-pts{font-size:11px;color:var(--ink-soft);margin-top:1px}
+.check-item.checked .check-name{color:var(--ink-mid)}
+
+/* SCORE BAR */
+.score-bar{margin:1.25rem 0;background:#fff;border:0.5px solid var(--line);border-radius:12px;padding:14px 16px}
+.score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.score-label{font-size:12px;color:var(--ink-soft)}
+.score-val{font-size:20px;font-weight:500;color:var(--ink)}
+.prog-track{background:var(--rose-mid);border-radius:4px;height:6px;overflow:hidden}
+.prog-fill{height:100%;background:var(--rose);border-radius:4px;transition:width .4s ease}
+
+/* SAVE BTN */
+.save-btn{width:100%;padding:13px;background:var(--ink);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#fff;cursor:pointer;transition:opacity .2s}
+.save-btn:hover{opacity:.85}
+.save-btn:disabled{opacity:.45;cursor:not-allowed}
+.save-ok{text-align:center;font-size:12px;color:var(--green);margin-top:8px;display:none;font-weight:500}
+.save-err{text-align:center;font-size:12px;color:#c0647a;margin-top:8px;display:none}
+
+/* RANKING */
+.prize-banner{background:linear-gradient(135deg,var(--rose-lt),#fff);border:0.5px solid var(--lilac);border-radius:12px;padding:12px 14px;margin-bottom:1.25rem}
+.prize-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);margin-bottom:8px}
+.prize-item{font-size:13px;color:var(--ink-mid);padding:4px 0;display:flex;align-items:center;gap:10px}
+.prize-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.p1{background:#fef9e7;color:#b8860b;border:1px solid #d4af37}
+.p2{background:#f5f5f5;color:#777;border:1px solid #bbb}
+.p3{background:#fdf0e8;color:#8b4513;border:1px solid #cd7f32}
+
+.my-score-card{background:var(--rose-lt);border:0.5px solid var(--lilac);border-radius:14px;padding:1.25rem;text-align:center;margin-bottom:1.25rem}
+.my-score-name{font-size:14px;font-weight:500;color:var(--ink-mid);margin-bottom:4px}
+.my-score-pts{font-size:42px;font-weight:500;color:var(--rose);line-height:1}
+.my-score-label{font-size:11px;color:var(--ink-soft);margin-top:4px}
+.my-score-tiebreak{font-size:10px;color:var(--ink-soft);margin-top:6px;padding:4px 10px;background:rgba(255,255,255,.6);border-radius:20px;display:inline-block}
+
+.refresh-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:6px 14px;border-radius:20px;border:0.5px solid var(--line);background:none;cursor:pointer;color:var(--ink-soft);font-family:'DM Sans',sans-serif;margin-bottom:1rem;transition:all .2s}
+.refresh-btn:hover{border-color:var(--lilac);color:var(--ink)}
+
+.rank-list{display:flex;flex-direction:column;gap:7px}
+.rank-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#fff;border:0.5px solid var(--line);border-radius:12px}
+.rank-pos{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.rp1{background:#fef9e7;color:#b8860b;border:1px solid #d4af37}
+.rp2{background:#f5f5f5;color:#777;border:1px solid #bbb}
+.rp3{background:#fdf0e8;color:#8b4513;border:1px solid #cd7f32}
+.rp-other{background:var(--rose-lt);color:var(--rose);border:0.5px solid var(--lilac)}
+.rank-info{flex:1}
+.rank-name{font-size:13px;font-weight:500;color:var(--ink)}
+.rank-badge{font-size:10px;background:var(--rose-mid);color:var(--ink-mid);padding:2px 8px;border-radius:20px;margin-top:2px;display:inline-block}
+.rank-tiebreak{font-size:10px;color:var(--ink-soft);display:block;margin-top:2px}
+.rank-pts{font-size:14px;font-weight:500;color:var(--rose)}
+.rank-days{font-size:10px;color:var(--ink-soft);display:block;text-align:right}
+
+.empty{text-align:center;padding:2.5rem;font-size:13px;color:var(--ink-soft);font-style:italic}
+.loading{text-align:center;padding:2rem;font-size:13px;color:var(--ink-soft)}
+
+/* COMO FUNCIONA */
+.info-card{background:#fff;border:0.5px solid var(--line);border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px}
+.info-card-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.info-card-text{font-size:12px;color:var(--ink-mid);line-height:1.65}
+.pts-table{width:100%;font-size:12px}
+.pts-table tr td{padding:5px 0;border-bottom:0.5px solid var(--line);color:var(--ink-mid)}
+.pts-table tr:last-child td{border-bottom:none}
+.pts-table td:last-child{text-align:right;font-weight:500;color:var(--rose)}
+.tip-box{background:var(--rose-lt);border:0.5px solid var(--lilac);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--ink-mid);line-height:1.6;margin-top:10px}
+
+.tiebreak-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.tb-item{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:var(--cream);border-radius:8px}
+.tb-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.tb1{background:#fef9e7;color:#b8860b;border:1px solid #d4af37}
+.tb2{background:#f5f5f5;color:#777;border:1px solid #bbb}
+.tb3{background:#fdf0e8;color:#8b4513;border:1px solid #cd7f32}
+.tb-text{font-size:12px;color:var(--ink-mid);line-height:1.4;padding-top:2px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Power <span>Wellness.</span></div>
+  <div class="logo-sub">Desafio 21 Dias · Poderosa no seu ritmo</div>
+  <span class="edition">✦ 2ª Edição</span>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('checklist',this)"><span class="tab-num">Meu</span>Checklist</button>
+  <button class="tab-btn" onclick="switchTab('ranking',this)"><span class="tab-num">Top 3</span>Ranking</button>
+  <button class="tab-btn" onclick="switchTab('como',this)"><span class="tab-num">Saiba</span>Como funciona</button>
+</div>
+
+<!-- CHECKLIST -->
+<div class="view active" id="v-checklist">
+  <div id="name-screen" class="name-screen">
+    <div class="welcome-title">Olá, Poderosa!</div>
+    <p class="welcome-sub">Coloca seu nome para registrar sua pontuação e aparecer no ranking. Que esse desafio seja transformador! 💜</p>
+    <input type="text" id="nameInput" placeholder="Seu primeiro nome" maxlength="30">
+    <button class="btn-primary" onclick="setName()">Começar desafio →</button>
+  </div>
+
+  <div id="checklist-screen" style="display:none">
+    <div class="day-selector" id="daySelector"></div>
+    <div class="day-header">
+      <div class="day-title" id="dayTitle">Dia 1 · Corpo</div>
+      <div class="day-quote" id="dayQuote">Hoje eu paro para me sentir.</div>
+      <span class="day-pts-badge" id="dayPts">0 / 85 pts</span>
+    </div>
+    <div class="sec-label">Nutrição</div>
+    <div class="check-list" id="checkNutri"></div>
+    <div class="sec-label">Exercício & Desafio</div>
+    <div class="check-list" id="checkExtra"></div>
+    <div class="score-bar">
+      <div class="score-row">
+        <span class="score-label">Pontos do dia</span>
+        <span class="score-val" id="dayScoreVal">0</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="dayProg" style="width:0%"></div></div>
+    </div>
+    <button class="save-btn" id="saveBtn" onclick="saveProgress()">Salvar meu progresso no ranking</button>
+    <div class="save-ok" id="saveOk">✓ Progresso salvo! Você está no ranking.</div>
+    <div class="save-err" id="saveErr">Erro ao salvar. Verifique sua conexão.</div>
+  </div>
+</div>
+
+<!-- RANKING -->
+<div class="view" id="v-ranking">
+  <div class="prize-banner">
+    <div class="prize-title">Prêmios — 3 mais poderosas</div>
+    <div class="prize-item"><div class="prize-num p1">1°</div> Brinde especial Grazzy Vaz</div>
+    <div class="prize-item"><div class="prize-num p2">2°</div> Brinde surpresa</div>
+    <div class="prize-item"><div class="prize-num p3">3°</div> Brinde surpresa</div>
+  </div>
+  <button class="refresh-btn" onclick="loadRanking()">↺ Atualizar ranking</button>
+  <div id="myScoreDiv"></div>
+  <div class="rank-list" id="rankList"><div class="loading">Carregando ranking…</div></div>
+</div>
+
+<!-- COMO FUNCIONA -->
+<div class="view" id="v-como">
+  <div class="info-card">
+    <div class="info-card-title">Como ganhar pontos</div>
+    <div class="info-card-text">Marque cada item que você completou no dia. Os pontos somam automaticamente! Clique em <strong>Salvar meu progresso</strong> todo dia para atualizar o ranking.</div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-card-title">Pontuação por item</div>
+    <table class="pts-table">
+      <tr><td>☕ Café da manhã</td><td>+10 pts</td></tr>
+      <tr><td>🥗 Almoço</td><td>+10 pts</td></tr>
+      <tr><td>🍎 Lanche da tarde</td><td>+5 pts</td></tr>
+      <tr><td>🍽️ Jantar</td><td>+10 pts</td></tr>
+      <tr><td>🫖 Ceia</td><td>+5 pts</td></tr>
+      <tr><td>💧 Meta de água (2L)</td><td>+15 pts</td></tr>
+      <tr><td>💪 Exercício do dia</td><td>+20 pts</td></tr>
+      <tr><td>✨ Desafio do dia</td><td>+10 pts</td></tr>
+    </table>
+    <div style="margin-top:10px;font-size:12px;color:var(--ink-soft)">Máximo por dia: <strong style="color:var(--rose)">85 pts</strong> · 21 dias completos: <strong style="color:var(--rose)">1.785 pts</strong></div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-card-title">🏆 Critério de desempate</div>
+    <div class="info-card-text">Se duas participantes tiverem a mesma pontuação, a classificação usa esta ordem:</div>
+    <div class="tiebreak-list">
+      <div class="tb-item"><div class="tb-num tb1">1</div><div class="tb-text"><strong>Mais dias completos</strong> — quem completou todos os 8 itens em mais dias leva vantagem</div></div>
+      <div class="tb-item"><div class="tb-num tb2">2</div><div class="tb-text"><strong>Maior sequência</strong> — quem manteve mais dias consecutivos sem falhar</div></div>
+      <div class="tb-item"><div class="tb-num tb3">3</div><div class="tb-text"><strong>Quem salvou primeiro</strong> — a data do primeiro registro desempata no limite</div></div>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-card-title">📋 Regras</div>
+    <div class="info-card-text">Marque apenas o que você realmente fez — aqui a honestidade é o primeiro passo para a transformação.<br><br>Salve seu progresso todos os dias para manter o ranking atualizado.<br><br>As 3 primeiras colocadas serão anunciadas no evento Power Wellness Edição Macacos — 25 de julho.</div>
+  </div>
+
+  <div class="tip-box">"Não é sobre perfeição. É sobre escolha." — Grazzy 💜</div>
+</div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbz6MwnFIJZ2ainEnnzb_QjwmVLaVocY97YPVKQY7qq1hINQIY16yjAGPBV0mpE-QIiBEw/exec'
+const MAX_DAY = 85
+
+const DAYS = [
+  // IDENTIDADE
+  {label:'Identidade',          quote:'Antes de ser poderosa para o mundo, você precisa saber quem é quando está sozinha.'},
+  {label:'Identidade',          quote:'A mulher que espera aprovação para ser ela mesma vai esperar pra sempre.'},
+  {label:'Identidade',          quote:'Você não age a partir do que é capaz. Age a partir do que acredita que é capaz.'},
+  // CRENÇAS LIMITANTES
+  {label:'Crenças Limitantes', quote:'O medo que te paralisa não é maior que a fé que te sustenta. Você decide qual fala mais alto.'},
+  {label:'Crenças Limitantes', quote:'Cair não define você. O que você faz depois de cair — esse é o seu caráter.'},
+  {label:'Crenças Limitantes', quote:'A voz que te derrubou não tem autoridade sobre quem você realmente é.'},
+  {label:'Crenças Limitantes', quote:'Você não foi chamada pelo que é agora. Foi chamada pelo que vai se tornar.'},
+  // AUTOESTIMA
+  {label:'Autoestima',          quote:'Você não foi feita pra caber. Foi feita pra ocupar o espaço que é seu.'},
+  {label:'Autoestima',          quote:'Sua autoestima não mora no espelho. Mora nas escolhas que você faz quando ninguém está olhando.'},
+  {label:'Autoestima',          quote:'Comparação é o roubo da sua própria singularidade.'},
+  {label:'Autoestima',          quote:'Há momentos em que a coisa mais corajosa é simplesmente entrar na sala e ocupar o seu lugar.'},
+  // AUTOCONHECIMENTO
+  {label:'Autoconhecimento',    quote:'Você não pode liderar sua vida se não conhece quem está no comando.'},
+  {label:'Autoconhecimento',    quote:'Você não é sua história. Mas entender sua história é o que te liberta dela.'},
+  {label:'Autoconhecimento',    quote:'Ignorar seu dom não é humildade. É desperdício.'},
+  {label:'Autoconhecimento',    quote:'Saber quando parar é tão importante quanto saber quando avançar.'},
+  // IDENTIDADE EM DEUS
+  {label:'Identidade em Deus',  quote:'Filha de Deus não é um título que você conquista. É uma identidade que você recebe.'},
+  {label:'Identidade em Deus',  quote:'Você não volta como servente. Você volta como filha.'},
+  {label:'Identidade em Deus',  quote:'Você carrega algo sagrado. Trate-se de acordo.'},
+  // PROPÓSITO
+  {label:'Propósito',           quote:'Quando você sabe o porquê, qualquer como se torna possível.'},
+  {label:'Propósito',           quote:'Fidelidade no pequeno é o caminho para o grande.'},
+  {label:'Propósito',           quote:'Você não chegou até aqui para parar aqui.'},
+]
+
+const ITEMS = [
+  {id:'cafe',     label:'Café da manhã',      pts:10, cat:'nutri'},
+  {id:'almoco',   label:'Almoço',             pts:10, cat:'nutri'},
+  {id:'lanche',   label:'Lanche da tarde',    pts:5,  cat:'nutri'},
+  {id:'jantar',   label:'Jantar',             pts:10, cat:'nutri'},
+  {id:'ceia',     label:'Ceia',               pts:5,  cat:'nutri'},
+  {id:'agua',     label:'Meta de água (2L)',  pts:15, cat:'extra'},
+  {id:'exercicio',label:'Exercício do dia',   pts:20, cat:'extra'},
+  {id:'desafio',  label:'Desafio do dia',     pts:10, cat:'extra'},
+]
+
+let userName  = localStorage.getItem('pw2_name') || ''
+let checks    = JSON.parse(localStorage.getItem('pw2_checks') || '{}')
+let firstSave = localStorage.getItem('pw2_first_save') || ''
+let curDay    = 0
+
+/* -------- TABS -------- */
+function switchTab(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  document.getElementById('v-' + id).classList.add('active')
+  btn.classList.add('active')
+  if (id === 'ranking') loadRanking()
+}
+
+/* -------- NAME -------- */
+function setName() {
+  const v = document.getElementById('nameInput').value.trim()
+  if (!v) return
+  userName = v
+  localStorage.setItem('pw2_name', userName)
+  showChecklist()
+}
+
+function showChecklist() {
+  document.getElementById('name-screen').style.display = 'none'
+  document.getElementById('checklist-screen').style.display = 'block'
+  buildDays()
+  renderDay(0)
+}
+
+/* -------- DAYS -------- */
+function buildDays() {
+  document.getElementById('daySelector').innerHTML = DAYS.map((d, i) => {
+    const pts = dayTotal(i)
+    const done = pts >= MAX_DAY
+    return `<div class="day-pill ${i===0?'active':''} ${done?'complete':''}" id="pill-${i}" onclick="renderDay(${i})">
+      <span class="dn">${i+1}</span>${done ? '✓' : d.label.split('·')[0].substring(0,4)}
+    </div>`
+  }).join('')
+}
+
+function renderDay(idx) {
+  curDay = idx
+  document.querySelectorAll('.day-pill').forEach((p, i) => p.classList.toggle('active', i === idx))
+  const d = DAYS[idx]
+  document.getElementById('dayTitle').textContent = `Dia ${idx+1} · ${d.label}`
+  document.getElementById('dayQuote').textContent = d.quote
+  renderItems('nutri')
+  renderItems('extra')
+  updateScore()
+}
+
+function renderItems(cat) {
+  const el = document.getElementById('check' + (cat === 'nutri' ? 'Nutri' : 'Extra'))
+  el.innerHTML = ITEMS.filter(it => it.cat === cat).map(item => {
+    const k = `d${curDay}_${item.id}`
+    const on = !!checks[k]
+    return `<div class="check-item ${on?'checked':''}" onclick="toggle('${k}',this)">
+      <div class="check-box">${on?'✓':''}</div>
+      <div class="check-info">
+        <div class="check-name">${item.label}</div>
+        <div class="check-pts">+${item.pts} pontos</div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function toggle(k, el) {
+  checks[k] = !checks[k]
+  localStorage.setItem('pw2_checks', JSON.stringify(checks))
+  el.classList.toggle('checked')
+  el.querySelector('.check-box').textContent = checks[k] ? '✓' : ''
+  updateScore()
+  buildDays()
+}
+
+function dayTotal(idx) {
+  return ITEMS.reduce((s, it) => s + (checks[`d${idx}_${it.id}`] ? it.pts : 0), 0)
+}
+
+function totalPts() {
+  return DAYS.reduce((s, _, i) => s + dayTotal(i), 0)
+}
+
+function completeDays() {
+  return DAYS.reduce((s, _, i) => s + (dayTotal(i) >= MAX_DAY ? 1 : 0), 0)
+}
+
+function bestStreak() {
+  let best = 0, cur = 0
+  DAYS.forEach((_, i) => {
+    if (dayTotal(i) >= MAX_DAY) { cur++; best = Math.max(best, cur) }
+    else cur = 0
+  })
+  return best
+}
+
+function updateScore() {
+  const pts = dayTotal(curDay)
+  const pct = Math.round((pts / MAX_DAY) * 100)
+  document.getElementById('dayScoreVal').textContent = pts
+  document.getElementById('dayProg').style.width = pct + '%'
+  document.getElementById('dayPts').textContent = `${pts} / ${MAX_DAY} pts`
+}
+
+/* -------- SAVE -------- */
+async function saveProgress() {
+  const btn = document.getElementById('saveBtn')
+  const ok  = document.getElementById('saveOk')
+  const err = document.getElementById('saveErr')
+  btn.disabled = true
+  btn.textContent = 'Salvando…'
+  ok.style.display = 'none'
+  err.style.display = 'none'
+
+  if (!firstSave) {
+    firstSave = new Date().toISOString()
+    localStorage.setItem('pw2_first_save', firstSave)
+  }
+
+  const payload = {
+    name:        userName,
+    pts:         totalPts(),
+    completeDays:completeDays(),
+    bestStreak:  bestStreak(),
+    firstSave:   firstSave,
+    updated:     new Date().toISOString()
+  }
+
+  try {
+    const url = `${API}?action=save2&name=${encodeURIComponent(userName)}&pts=${payload.pts}&completeDays=${payload.completeDays}&bestStreak=${payload.bestStreak}&firstSave=${encodeURIComponent(firstSave)}`
+    await fetch(url, {mode:'no-cors'})
+    ok.style.display = 'block'
+    setTimeout(() => ok.style.display = 'none', 3000)
+  } catch(e) {
+    err.style.display = 'block'
+    setTimeout(() => err.style.display = 'none', 4000)
+  }
+
+  btn.disabled = false
+  btn.textContent = 'Salvar meu progresso no ranking'
+}
+
+/* -------- RANKING -------- */
+async function loadRanking() {
+  const list   = document.getElementById('rankList')
+  const myDiv  = document.getElementById('myScoreDiv')
+  list.innerHTML = '<div class="loading">Carregando…</div>'
+  myDiv.innerHTML = ''
+
+  try {
+    const res  = await fetch(`${API}?action=get2`)
+    const data = await res.json()
+    let entries = data.ranking || []
+
+    // DESEMPATE: pts desc → completeDays desc → bestStreak desc → firstSave asc
+    entries.sort((a, b) => {
+      if (b.pts !== a.pts) return b.pts - a.pts
+      if ((b.completeDays||0) !== (a.completeDays||0)) return (b.completeDays||0) - (a.completeDays||0)
+      if ((b.bestStreak||0) !== (a.bestStreak||0)) return (b.bestStreak||0) - (a.bestStreak||0)
+      return (a.firstSave||'').localeCompare(b.firstSave||'')
+    })
+
+    if (!entries.length) {
+      list.innerHTML = '<div class="empty">Nenhuma participante ainda.<br>Seja a primeira! 💜</div>'
+      return
+    }
+
+    const medals = ['🥇','🥈','🥉']
+    const posClass = ['rp1','rp2','rp3']
+
+    list.innerHTML = entries.map((e, i) => {
+      const isMe = e.name.toLowerCase() === userName.toLowerCase()
+      const pc   = i < 3 ? posClass[i] : 'rp-other'
+      const medal= medals[i] || (i+1)
+      const tieInfo = `${e.completeDays||0} dias completos · ${e.bestStreak||0} consecutivos`
+      return `<div class="rank-item" style="${isMe?'border-color:var(--rose);background:var(--rose-lt)':''}">
+        <div class="rank-pos ${pc}">${medal}</div>
+        <div class="rank-info">
+          <div class="rank-name">${e.name}${isMe?' (você)':''}</div>
+          ${i < 3 ? `<span class="rank-badge">${i===0?'1° · Brinde especial':i===1?'2° · Brinde surpresa':'3° · Brinde surpresa'}</span>` : ''}
+          <span class="rank-tiebreak">${tieInfo}</span>
+        </div>
+        <div>
+          <div class="rank-pts">${e.pts} pts</div>
+          <div class="rank-days">${e.completeDays||0}/21 dias</div>
+        </div>
+      </div>`
+    }).join('')
+
+    const myIdx = entries.findIndex(e => e.name.toLowerCase() === userName.toLowerCase())
+    if (myIdx >= 0) {
+      const me = entries[myIdx]
+      myDiv.innerHTML = `<div class="my-score-card">
+        <div class="my-score-name">${me.name}</div>
+        <div class="my-score-pts">${me.pts}</div>
+        <div class="my-score-label">pontos totais · ${myIdx+1}° lugar de ${entries.length}</div>
+        <div class="my-score-tiebreak">Dias completos: ${me.completeDays||0} · Sequência: ${me.bestStreak||0}</div>
+      </div>`
+    }
+  } catch(e) {
+    list.innerHTML = '<div class="empty">Erro ao carregar. Tente novamente.</div>'
+  }
+}
+
+/* -------- INIT -------- */
+if (userName) showChecklist()
+</script>
+</body>
+</html>
